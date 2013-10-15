@@ -1,0 +1,73 @@
+﻿@model dynamic
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>title</title>
+    </head>
+    <body>
+        <div>
+            <h1>Reports Index</h1>
+            <div>
+                Type "throw" into this textbox to cause an exception:
+                <input id="blah" name="blah" value="nothrow"/>
+            </div>
+            <p>Click to do ajax load</p>
+            <input id="btnAjax" type="submit" value="Click" title="Click here"/>
+        </div>
+        <div id="resultsDiv">
+            This is where the ajax partial view is rendered
+        </div>
+    </body>
+    @Scripts.Render("~/bundles/jquery")
+</html>
+
+<script>
+    var resultsDiv = $("#resultsDiv");
+
+    $("#btnAjax").on("click", function () {
+        var blah = $("#blah").val();
+
+        alert(blah);
+
+        var url = '@Url.Action("SummaryExpansion", "Reports")';
+
+        url = url + "?blah=" + blah;
+
+        $.ajaxSetup({
+            timeout: 2000
+        });
+        
+        resultsDiv.load(url, function (response, status, xhr) {
+            if (status !== "error") {
+                if (status == "timeout") {
+                    alert("timeout dude");
+                } else {
+                    alert("status = " + status);
+
+                }
+            } else {
+                 if (xhr.status == 401) {
+                    alert("Your session has timed out.");
+                    window.location.assign('@Url.Action( "Login", "Account" )');
+                } else {
+                    alert("some sort of other ERROR");
+                }
+            }
+        });
+    });
+
+//    $.ajaxError(function (e, xhr, settings) {
+//        if (xhr.status == 401) {
+//            alert("Your session has timed out.");
+//            window.location.assign('@Url.Action( "Login", "Account" )');
+//            
+//        }
+//
+//    });
+</script>
